@@ -23,19 +23,35 @@ const pool = new Pool(ddbbConfig);
 const getMotos = (request, response) => {
    var consulta ;
    let marca = request.query.marca
-   let consultaFiltro;
+   if (marca == undefined) {
+      consulta = "SELECT * FROM  motos"
+     }else{
+      consulta = `SELECT * FROM motos WHERE marca='${marca}'` 
+     }
    pool.query(consulta, (error, results) => {
-       if (marca == undefined) {
-        consulta = "SELECT * FROM  motos"
-       }else{
-        consultaFiltro = `SELECT * FROM motos WHERE marca=${marca}` 
-       }
+      
        //a qui retornem la el status 200 (OK) i en el cos de la resposta les motos en json
        response.status(200).json(results.rows)
        console.log(results.rows);
    });
 }
 app.get(baseUrl + '/getmotos', getMotos);
+
+const deleteMotos = (request, response) => {
+   var consulta ;
+   let id = request.query.id
+   consulta = `DELETE FROM motos WHERE id='${id}'`; 
+   pool.query(consulta, (error, results) => {
+      if(error){
+         throw error;
+      }
+       //a qui retornem la el status 200 (OK) i en el cos de la resposta les motos en json
+       response.status(200).json(results.rows)
+       console.log(results.rows);
+   });
+}
+app.delete(baseUrl + '/delete/:id', deleteMotos);
+
 
 //Inicialitzem el servei
 const PORT = process.env.PORT || 3000; // Port
